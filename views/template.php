@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="h-full w-full">
     <head>
-        <title><?= $title ?></title>
+        <title><?= $title ?? "Login" ?></title>
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
 
