@@ -92,6 +92,14 @@ class User {
         return $queryResponse;
     }
 
+    public static function listUsers(){
+        require_once '../db.php';
+        $db = new DB();
+        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role` FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol";
+        $query = $db->db->prepare($sql);
+        $query->execute();
+        return $query->fetchAll();
+    }
 
 
 }

@@ -83,6 +83,10 @@ function loginUser($email, $password){
     }
 }
 
+function getUsersList(){
+    return User::listUsers();
+}
+
 
 
 ?>
