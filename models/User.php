@@ -8,7 +8,7 @@ class User {
     private string $password;
     private string $roleId;
 
-    public function __construct($email, $password, $username = "")
+    public function __construct($email = '', $password = '', $username = "")
     {
         $this->setUsername($username);
         $this->setEmail($email);
@@ -16,6 +16,13 @@ class User {
         $this->setRoleId(2);
     }
 
+    public static function byUserRol($rol){
+        $user = new self();
+        $user->setRoleId($rol);
+        return $user;
+    }
+
+    
     public function getUsername(){
         return $this->username;
     }
@@ -95,12 +102,19 @@ class User {
     public static function listUsers(){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role` FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol";
+        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role` FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol ORDER BY user.es_activo DESC, user.id_rol";
         $query = $db->db->prepare($sql);
         $query->execute();
         return $query->fetchAll();
     }
 
+    public function deleteUser($id) {
+        require_once '../db.php';
+        $db = new DB();
+        $sql = "UPDATE usuarios SET es_activo=0 WHERE id = ?";
+        $query = $db->db->prepare($sql);
+        return $query->execute([$id]);
+    }
 
 }
 

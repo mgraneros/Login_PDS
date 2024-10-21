@@ -1,3 +1,4 @@
+<?php require_once '../utils.php'; ?>
 <!DOCTYPE html>
 <html class="h-full w-full">
     <head>

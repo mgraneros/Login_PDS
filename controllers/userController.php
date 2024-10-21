@@ -83,6 +83,11 @@ function loginUser($email, $password){
     }
 }
 
+function deleteUser($id){
+    $adminUser = User::byUserRol('Admin');
+    return $adminUser->deleteUser($id);
+}
+
 function getUsersList(){
     return User::listUsers();
 }
