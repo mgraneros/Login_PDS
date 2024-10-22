@@ -35,9 +35,15 @@
                 : $_SERVER['REMOTE_ADDR']);
             $affected_table = $tables_by_type[$log_type];
             $db = new DB();
-            $sql = "INSERT INTO logs (fecha, usuario_id, accion, descripcion, ip, tabla_afectada) VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO logs (fecha, usuario_id, accion, descripcion, ip, tabla_afectada) VALUES (:fecha, :usuario_id, :accion, :descripcion, :ip, :tabla_afectada)";
             $query = $db->db->prepare($sql);
-            $query->execute([$fechaToInsert, $user_id, $log_type, $descripcion, $ip, $affected_table]);
+            $query->bindParam('fecha', $fecha, PDO::PARAM_STR, 10);
+            $query->bindParam('usuario_id', $user_id, PDO::PARAM_INT, 11);
+            $query->bindParam('accion', $log_type, PDO::PARAM_STR, 255);
+            $query->bindParam('descripcion', $descripcion, PDO::PARAM_STR, 255);
+            $query->bindParam('ip', $ip, PDO::PARAM_STR, 50);
+            $query->bindParam('tabla_afectada', $affected_table, PDO::PARAM_STR, 50);
+            $query->execute();
         }
 
 

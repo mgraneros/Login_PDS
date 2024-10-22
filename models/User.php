@@ -7,6 +7,7 @@ class User {
     private string $email;
     private string $password;
     private string $roleId;
+    private string $id;
 
     public function __construct($email = '', $password = '', $username = "")
     {
@@ -27,12 +28,20 @@ class User {
         return $this->username;
     }
 
+    public function getId(){
+        return $this->id;
+    }
+
     public function getEmail(){
         return $this->email;
     }
 
     public function setUsername($username){
         $this->username = $username;
+    }
+
+    public function setId($id){
+        $this->id = $id;
     }
 
     public function setEmail($email){
@@ -66,37 +75,53 @@ class User {
     public function getUserByEmail(){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT email, password, id_rol FROM usuarios WHERE email = ? AND es_activo=1";
+        $sql = "SELECT email, password, id_rol, id FROM usuarios WHERE email = :email AND es_activo=1";
         $query = $db->db->prepare($sql);
-        $query->execute([$this->getEmail()]);
+        $query->bindParam('email', $this->getEmail(), PDO::PARAM_STR, 255);
+        $query->execute();
         return $query->fetch();
     }
 
     public function getUserByUsername($username){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT username, password, id_rol FROM usuarios WHERE username = ? AND es_activo=1";
+        $sql = "SELECT username, password, id_rol, id FROM usuarios WHERE username = :username AND es_activo=1";
         $query = $db->db->prepare($sql);
-        $query->execute([$username]);
+        $query->bindParam('username', $username, PDO::PARAM_STR, 255);
+        $query->execute();
         return $query->fetch();
     }
 
     public static function getUserByUsernameOrEmail($email, $username){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT id FROM usuarios WHERE email = ? OR username = ?";
+        $sql = "SELECT id FROM usuarios WHERE email = :email OR username = :username";
         $query = $db->db->prepare($sql);
-        $query->execute([$email, $username]);
+        $query->bindParam('email', $email, PDO::PARAM_STR, 255);
+        $query->bindParam('username', $username, PDO::PARAM_STR, 255);
+        $query->execute();
         return $query->fetch();
     }
 
     public function saveUser(){
         require_once '../db.php';
         $db = new DB();
-        $sql = "INSERT INTO usuarios (password, email, username, id_rol, fecha_creacion, es_activo) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO usuarios (password, email, username, id_rol, fecha_creacion, es_activo) VALUES (:password, :email, :username, :id_rol, :fecha_creacion, :es_activo)";
         $query = $db->db->prepare($sql);
-        $queryResponse = $query->execute([$this->getPassword(), $this->getEmail(), $this->getUsername(), $this->getRoleId(), date('Y-m-d'), 1]);
-        return $queryResponse;
+        $active = 1;
+        $query->bindParam('password', $this->getPassword(), PDO::PARAM_STR, 255);
+        $query->bindParam('email', $this->getEmail(), PDO::PARAM_STR, 255);
+        $query->bindParam('username', $this->getUsername(), PDO::PARAM_STR, 255);
+        $query->bindParam('id_rol', $this->getRoleId(), PDO::PARAM_INT, 2);
+        $query->bindParam('fecha_creacion', date('Y-m-d'), PDO::PARAM_STR, 10);
+        $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
+        $queryResponse = $query->execute();
+        if($queryResponse){
+            $id = $db->db->lastInsertId();
+        } else {
+            $id = false;
+        }
+        return [ "response" => $queryResponse, 'id' => $id ];
     }
 
     public static function listUsers(){
@@ -111,17 +136,23 @@ class User {
     public function deleteUser($id) {
         require_once '../db.php';
         $db = new DB();
-        $sql = "UPDATE usuarios SET es_activo=0 WHERE id = ?";
+        $sql = "UPDATE usuarios SET es_activo = :es_activo WHERE id = :id";
         $query = $db->db->prepare($sql);
-        return $query->execute([$id]);
+        $active = 0;
+        $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
+        $query->bindParam('id', $id, PDO::PARAM_STR);
+        return $query->execute();
     }
 
     public function restoreUser($id) {
         require_once '../db.php';
         $db = new DB();
-        $sql = "UPDATE usuarios SET es_activo=1 WHERE id = ?";
+        $sql = "UPDATE usuarios SET es_activo = :es_activo WHERE id = :id";
         $query = $db->db->prepare($sql);
-        return $query->execute([$id]);
+        $active = 1;
+        $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
+        $query->bindParam('id', $id, PDO::PARAM_INT);
+        return $query->execute();
     }
 
 }
