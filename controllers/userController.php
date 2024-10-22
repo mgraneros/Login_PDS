@@ -44,20 +44,33 @@ function registerNewUser($email, $password, $username){
     $user = new User($email, $password, $username);
     $userCreation = $user->saveUser();
     if($userCreation){
+        DB::insert_log('register_user_success', 'User registered');
         return header('Location: /home');
         exit;
     } else {
+        DB::insert_log('register_user_error', 'Error inserting in DB');
         return 'error';
     }
 }
 
-function verifyPassAndRedirect($userModel, $password, $passwordToCompare){
+function verifyPassAndRedirect($userModel, $password, $passwordToCompare, $rol_id){
     $passVerify = $userModel->verifyPassword($password, $passwordToCompare);
     if($passVerify){
         $_SESSION['jwt'] = 'a';
+        $_SESSION['rol_id'] = $rol_id;
+        $arr_cookie_options = array (
+            'expires' => time() + 60*60*24*30,  
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+            );
+        setcookie('rol_id', strval($rol_id), time()+60*60*24*30);
+        $_SESSION['rol_id'] = $rol_id;
+        DB::insert_log('login_user_success', 'Login success');
         header('Location: /home');
         exit;
     } else {
+        DB::insert_log('login_user_error', 'Wrong password');
         $_SESSION['login_error'] = "Wrong credentials";
         header('Location: /');
         exit;
@@ -73,19 +86,25 @@ function loginUser($email, $password){
         $userByUsername = $userModel->getUserByUsername($email);
         if(!is_array($userByUsername)){
             $_SESSION['login_error'] = "Wrong credentials";
+            DB::insert_log('login_user_error', 'No user with that email or username');
             header('Location: /');
             exit;
         } else {
-            verifyPassAndRedirect($userModel, $password, $userByUsername['password']);
+            verifyPassAndRedirect($userModel, $password, $userByUsername['password'], $userByUsername['id_rol']);
         }
     } else {
-        verifyPassAndRedirect($userModel, $password, $userByEmail['password']);
+        verifyPassAndRedirect($userModel, $password, $userByEmail['password'], $userByEmail['id_rol']);
     }
 }
 
 function deleteUser($id){
     $adminUser = User::byUserRol('Admin');
     return $adminUser->deleteUser($id);
+}
+
+function restoreUser($id){
+    $adminUser = User::byUserRol('Admin');
+    return $adminUser->restoreUser($id);
 }
 
 function getUsersList(){

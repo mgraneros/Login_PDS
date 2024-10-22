@@ -66,7 +66,7 @@ class User {
     public function getUserByEmail(){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT email, password FROM usuarios WHERE email = ?";
+        $sql = "SELECT email, password, id_rol FROM usuarios WHERE email = ? AND es_activo=1";
         $query = $db->db->prepare($sql);
         $query->execute([$this->getEmail()]);
         return $query->fetch();
@@ -75,7 +75,7 @@ class User {
     public function getUserByUsername($username){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT username, password FROM usuarios WHERE username = ?";
+        $sql = "SELECT username, password, id_rol FROM usuarios WHERE username = ? AND es_activo=1";
         $query = $db->db->prepare($sql);
         $query->execute([$username]);
         return $query->fetch();
@@ -112,6 +112,14 @@ class User {
         require_once '../db.php';
         $db = new DB();
         $sql = "UPDATE usuarios SET es_activo=0 WHERE id = ?";
+        $query = $db->db->prepare($sql);
+        return $query->execute([$id]);
+    }
+
+    public function restoreUser($id) {
+        require_once '../db.php';
+        $db = new DB();
+        $sql = "UPDATE usuarios SET es_activo=1 WHERE id = ?";
         $query = $db->db->prepare($sql);
         return $query->execute([$id]);
     }
