@@ -48,7 +48,7 @@
             </div>
             <table class="table-auto border mt-3 border-slate-500 w-9/12 [&>tbody>*:nth-child(odd)]:text-white [&>tbody>*:nth-child(even)]:bg-white [&>tbody>*:nth-child(odd)]:bg-gray-600 [&>tbody>*:nth-child(even)]:text-black">
             <thead>
-                <tr>
+                <tr class="bg-indigo-600">
                 <?php foreach($ths as $th): ?>
                     <th class="border border-slate-500 capitalize"><?= $th ?></th>
                 <?php endforeach ?>
@@ -84,7 +84,7 @@
             </div>
             <table class="table-auto border mt-3 border-slate-500 w-9/12 [&>tbody>*:nth-child(odd)]:text-white [&>tbody>*:nth-child(even)]:bg-white [&>tbody>*:nth-child(odd)]:bg-gray-600 [&>tbody>*:nth-child(even)]:text-black">
             <thead>
-                <tr>
+                <tr class="bg-indigo-600">
                 <?php foreach($thsLogs as $thLog): ?>
                     <th class="border border-slate-500 capitalize"><?= $thLog ?></th>
                 <?php endforeach ?>
