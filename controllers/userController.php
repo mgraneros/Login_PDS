@@ -2,11 +2,21 @@
 
 require_once '../models/User.php';
 
+function validateDate($date, $format = 'Y-m-d') { 
+	$d = DateTime::createFromFormat($format, $date); 
+	return $d && $d->format($format) === $date; 
+}
+
+function validateDateBeforeToday($date){
+    return strtotime($date) < strtotime('-12 year', time());
+}
+
 function validateRegisterForms($formsValues){
-    $email = $formsValues['email'];
+    $email = filter_var($formsValues['email'], FILTER_SANITIZE_EMAIL);
     $password = $formsValues['password'];
     $username = $formsValues['username'];
-    $err = ["username" => false, "email" => false, "password" => false];
+    $birthdate = $formsValues['birthdate'];
+    $err = ["username" => false, "email" => false, "password" => false, 'birthdate' => false];
     $usernamePattern = "/^[a-zA-Z-' ]*$/";
     $passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
     unset($_SESSION['register_error']);
@@ -22,7 +32,16 @@ function validateRegisterForms($formsValues){
         $_SESSION['register_error'] = 'Invalid password, it should have at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character';
         $err['password'] = true;
     }
-    return !($err["email"] || $err['username'] || $err['password']);
+    if(!validateDate($birthdate)){
+        $_SESSION['register_error'] = 'Invalid format birthdate';
+        $err['birthdate'] = true;
+    }
+    if(!validateDateBeforeToday($birthdate)){
+        $_SESSION['register_error'] = 'Invalid birthdate, is before today';
+        $err['birthdate'] = true;
+    }
+
+    return !($err["email"] || $err['username'] || $err['password'] || $err['birthdate']);
 }
 
 function validateLoginForms($formsValues){
@@ -40,8 +59,9 @@ function getUserByUsernameOrEmail($email, $username){
     return User::getUserByUsernameOrEmail($email, $username);
 }
 
-function registerNewUser($email, $password, $username){
+function registerNewUser($email, $password, $username, $birthdate){
     $user = new User($email, $password, $username);
+    $user->setBirthdate($birthdate);
     $userCreation = $user->saveUser();
     if($userCreation['response']){
         DB::insert_log('register_user_success', 'User registered', $userCreation['id']);

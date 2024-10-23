@@ -14,7 +14,7 @@ if($_POST){
             header('Location: /register');
             exit;
         } else {
-            $response = registerNewUser($_POST['email'], $_POST['password'], $_POST['username']);
+            $response = registerNewUser($_POST['email'], $_POST['password'], $_POST['username'], $_POST['birthdate']);
         }
     } else {
         DB::insert_log('register_user_error', 'Forms validation error');

@@ -8,6 +8,7 @@ class User {
     private string $password;
     private string $roleId;
     private string $id;
+    private string $birthdate;
 
     public function __construct($email = '', $password = '', $username = "")
     {
@@ -22,7 +23,6 @@ class User {
         $user->setRoleId($rol);
         return $user;
     }
-
     
     public function getUsername(){
         return $this->username;
@@ -32,12 +32,20 @@ class User {
         return $this->id;
     }
 
+    public function getBirthdate(){
+        return $this->birthdate;
+    }
+
     public function getEmail(){
         return $this->email;
     }
 
     public function setUsername($username){
         $this->username = $username;
+    }
+
+    public function setBirthdate($birthdate){
+        $this->birthdate = $birthdate;
     }
 
     public function setId($id){
@@ -106,7 +114,7 @@ class User {
     public function saveUser(){
         require_once '../db.php';
         $db = new DB();
-        $sql = "INSERT INTO usuarios (password, email, username, id_rol, fecha_creacion, es_activo) VALUES (:password, :email, :username, :id_rol, :fecha_creacion, :es_activo)";
+        $sql = "INSERT INTO usuarios (password, email, username, id_rol, fecha_creacion, es_activo, fecha_nacimiento) VALUES (:password, :email, :username, :id_rol, :fecha_creacion, :es_activo, :birthdate)";
         $query = $db->db->prepare($sql);
         $active = 1;
         $query->bindParam('password', $this->getPassword(), PDO::PARAM_STR, 255);
@@ -115,6 +123,7 @@ class User {
         $query->bindParam('id_rol', $this->getRoleId(), PDO::PARAM_INT, 2);
         $query->bindParam('fecha_creacion', date('Y-m-d'), PDO::PARAM_STR, 10);
         $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
+        $query->bindParam('birthdate', $this->getBirthdate(), PDO::PARAM_STR, 10);
         $queryResponse = $query->execute();
         if($queryResponse){
             $id = $db->db->lastInsertId();
