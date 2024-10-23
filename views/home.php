@@ -26,6 +26,10 @@
     if(is_array($logs)){
         $thsLogs = array_keys($logs[0]);
     }
+
+    if($_GET && isset($_GET['emailSearch'])){
+        $users = getUsersListByEmail($_GET['emailSearch']);
+    }
     // echo '<pre>'; var_dump('users: ', $users); echo '<pre>';
 ?>
 <div class="mt-52 flex flex-column w-full">
@@ -44,6 +48,12 @@
         <div class="w-full flex flex-col items-center">
             <div class="flex flex-row justify-between mt-5 w-9/12 items-center">
                 <h1 class="h1 font-bold text-xl">Users lists</h1>
+                <div>
+                    <form method="GET" action="#" >
+                        <label class="mr-3" for="emailSearch" >Email:</label>
+                        <input name="emailSearch" id="emailSearch" class="rounded" type="text" placeholder="Email" value="<?= $_GET['emailSearch'] ?? '' ?>" />
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-full">Search</button>
+                    </form></div>
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Add New</button>
             </div>
             <table class="table-auto border mt-3 border-slate-500 w-9/12 [&>tbody>*:nth-child(odd)]:text-white [&>tbody>*:nth-child(even)]:bg-white [&>tbody>*:nth-child(odd)]:bg-gray-600 [&>tbody>*:nth-child(even)]:text-black">

@@ -111,6 +111,9 @@ function getUsersList(){
     return User::listUsers();
 }
 
+function getUsersListByEmail($email){
+    return User::listUsersByEmail($email);
+}
 
 
 ?>

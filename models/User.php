@@ -133,6 +133,17 @@ class User {
         return $query->fetchAll();
     }
 
+    public static function listUsersByEmail($email){
+        require_once '../db.php';
+        $db = new DB();
+        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role` FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol WHERE user.email LIKE :email ORDER BY user.es_activo DESC, user.id_rol";
+        $query = $db->db->prepare($sql);
+        $emailLike = "%$email%";
+        $query->bindParam('email', $emailLike, PDO::PARAM_STR, 255);
+        $query->execute();
+        return $query->fetchAll();
+    }
+
     public function deleteUser($id) {
         require_once '../db.php';
         $db = new DB();
