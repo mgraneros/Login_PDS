@@ -10,7 +10,7 @@ if($_POST){
         $userWithSameUsernameOrEmail = getUserByUsernameOrEmail($_POST['email'], $_POST['username']);
         if(is_array($userWithSameUsernameOrEmail)){
             $_SESSION['register_error'] = "Register failed, choose another username or email";
-            DB::insert_log('register_user_error', 'User already exists');
+            DB::insert_log('register_user_error', 'User already exists', $userWithSameUsernameOrEmail['id']);
             header('Location: /register');
             exit;
         } else {

@@ -53,18 +53,18 @@ function registerNewUser($email, $password, $username){
     }
 }
 
-function verifyPassAndRedirect($userModel, $password, $passwordToCompare, $rol_id, $userId){
+function verifyPassAndRedirect($userModel, $password, $passwordToCompare, $rol_id, $userId, $remember){
     $passVerify = $userModel->verifyPassword($password, $passwordToCompare);
     if($passVerify){
         $_SESSION['jwt'] = 'a';
         $_SESSION['rol_id'] = $rol_id;
         $arr_cookie_options = array (
-            'expires' => time() + 60*60*24*30,  
+            'expires' => isset($remember) && $remember ? time() + 60*60*24*30 : time() + 3600,
             'secure' => true,
             'httponly' => true,
             'samesite' => 'Strict'
             );
-        setcookie('rol_id', strval($rol_id), time()+60*60*24*30);
+        setcookie('rol_id', strval($rol_id), $arr_cookie_options);
         $_SESSION['rol_id'] = $rol_id;
         DB::insert_log('login_user_success', 'Login success', $userId);
         header('Location: /home');
@@ -77,7 +77,7 @@ function verifyPassAndRedirect($userModel, $password, $passwordToCompare, $rol_i
     }
 }
 
-function loginUser($email, $password){
+function loginUser($email, $password, $remember){
     session_start();
     unset($_SESSION['login_error']);
     $userModel = new User($email, $password);
@@ -90,10 +90,10 @@ function loginUser($email, $password){
             header('Location: /');
             exit;
         } else {
-            verifyPassAndRedirect($userModel, $password, $userByUsername['password'], $userByUsername['id_rol'], $userByUsername['id']);
+            verifyPassAndRedirect($userModel, $password, $userByUsername['password'], $userByUsername['id_rol'], $userByUsername['id'], $remember);
         }
     } else {
-        verifyPassAndRedirect($userModel, $password, $userByEmail['password'], $userByEmail['id_rol'], $userByEmail['id']);
+        verifyPassAndRedirect($userModel, $password, $userByEmail['password'], $userByEmail['id_rol'], $userByEmail['id'], $remember);
     }
 }
 
