@@ -79,7 +79,7 @@
                     <td class='border border-slate-500'><?= formatDateToShow($user['fecha_creacion']) ?></td>
                     <td class='border border-slate-500'><?= $user['es_activo'] ?></td>
                     <td class='border border-slate-500'><?= $user['role'] ?></td>
-                    <td class="border border-slate-500"><button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full">Edit</button></td>
+                    <td class="border border-slate-500"><form method="GET" action="/controllers/editController.php"><input type="hidden" name="idEdit" value=<?= $user['id'] ?> class='disabled' /><button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full">Edit</button></form></td>
                     <td class="border border-slate-500"><form method="POST" action="/controllers/deleteController.php"><input name=<?= $idInputName ?> type="hidden" class="disabled" value=<?= $user['id'] ?> /><button class="<?= $classNames ?>"><?= $buttonText ?></button></form></td>
                 </tr>
                 <?php endforeach ?>

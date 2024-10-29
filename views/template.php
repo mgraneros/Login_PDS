@@ -2,6 +2,7 @@
 <html class="h-full w-full">
     <head>
         <title><?= $title ?? "Login" ?></title>
+        <link rel="icon" href="../assets/logo-icon.png">
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
 

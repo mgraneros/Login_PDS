@@ -9,6 +9,8 @@ class User {
     private string $roleId;
     private string $id;
     private string $birthdate;
+    private string $deletionDate;
+    private bool $is_active;
 
     public function __construct($email = '', $password = '', $username = "")
     {
@@ -23,6 +25,18 @@ class User {
         $user->setRoleId($rol);
         return $user;
     }
+
+    public static function byId($id){
+        $userObj = new User();
+        $user = $userObj->getUserById($id);
+        $userObj->setEmail($user['email']);
+        $userObj->setBirthdate($user['birthdate']);
+        $userObj->setUsername($user['username']);
+        $userObj->setId($user['id']);
+        $userObj->setRoleId($user['id_rol']);
+        $userObj->setDeletionDate($user['deletionDate']);
+        return $userObj;
+    }
     
     public function getUsername(){
         return $this->username;
@@ -36,6 +50,14 @@ class User {
         return $this->birthdate;
     }
 
+    public function getDeletionDate(){
+        return $this->deletionDate;
+    }
+
+    public function getIsActive(){
+        return $this->is_active;
+    }
+
     public function getEmail(){
         return $this->email;
     }
@@ -46,6 +68,14 @@ class User {
 
     public function setBirthdate($birthdate){
         $this->birthdate = $birthdate;
+    }
+
+    public function setDeletionDate($deletionDate){
+        $this->deletionDate = $deletionDate;
+    }
+
+    public function setIsActive($is_active){
+        $this->is_active = $is_active;
     }
 
     public function setId($id){
@@ -96,6 +126,16 @@ class User {
         $sql = "SELECT username, password, id_rol, id FROM usuarios WHERE username = :username AND es_activo=1";
         $query = $db->db->prepare($sql);
         $query->bindParam('username', $username, PDO::PARAM_STR, 255);
+        $query->execute();
+        return $query->fetch();
+    }
+
+    public static function getUserById($id){
+        require_once '../db.php';
+        $db = new DB();
+        $sql = "SELECT id, email, id_rol, fecha_nacimiento AS birthdate, username, es_activo, fecha_eliminacion AS deletionDate FROM usuarios WHERE id = :id";
+        $query = $db->db->prepare($sql);
+        $query->bindParam('id', $id, PDO::PARAM_INT, 11);
         $query->execute();
         return $query->fetch();
     }
@@ -156,11 +196,13 @@ class User {
     public function deleteUser($id) {
         require_once '../db.php';
         $db = new DB();
-        $sql = "UPDATE usuarios SET es_activo = :es_activo WHERE id = :id";
+        $sql = "UPDATE usuarios SET es_activo = :es_activo, fecha_eliminacion = :fecha_elim WHERE id = :id";
         $query = $db->db->prepare($sql);
         $active = 0;
+        $deleteDate = date('Y-m-d');
         $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
         $query->bindParam('id', $id, PDO::PARAM_STR);
+        $query->bindParam('fecha_elim', $deleteDate, PDO::PARAM_STR, 10);
         return $query->execute();
     }
 

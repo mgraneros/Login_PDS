@@ -135,5 +135,9 @@ function getUsersListByEmail($email){
     return User::listUsersByEmail($email);
 }
 
+function getUserById($id){
+    return User::byId($id);
+}
+
 
 ?>
