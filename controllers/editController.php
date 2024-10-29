@@ -2,12 +2,21 @@
 
 require_once './userController.php';
 require_once '../db.php';
+require_once '../utils.php';
 session_start();
 
 if($_GET && isset($_GET['idEdit'])){
-    $user = getUserById($_GET['idEdit']);
-    $title = "Edit User";
-    require_once '../views/edit.php';
+    $me = User::getMe();
+    $idToEdit = $_GET['idEdit'];
+    if(isAdmin($me) || $idToEdit == $me->getId()){
+        $user = getUserById($idToEdit);
+        $title = "Edit User";
+        require_once '../views/edit.php';
+    } else {
+        DB::insert_log('update_user_error', 'Not admin trying to edit a user', $me->getId());
+        header('Location: /home');
+        exit;
+    }
 }
 
 if(isset($_POST) && $_POST){

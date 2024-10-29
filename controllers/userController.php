@@ -74,7 +74,12 @@ function validateLoginForms($formsValues){
         $_SESSION['login_error'] = "Invalid email";
         $err['email'] = true;
     }
-    return !($err["email"]);
+    $usernamePattern = "/^[a-zA-Z-0-9' ]*$/";
+    if (!preg_match($usernamePattern, $email)) {
+        $_SESSION['edit_error'] = 'Invalid username, only letters, numbers and whitespaces allowed';
+        $err['username'] = true;
+    }
+    return !($err["email"] && $err['username']);
 }
 
 function getUserByUsernameOrEmail($email, $username){
@@ -102,12 +107,13 @@ function verifyPassAndRedirect($userModel, $password, $passwordToCompare, $rol_i
         $_SESSION['rol_id'] = $rol_id;
         $arr_cookie_options = array (
             'expires' => isset($remember) && $remember ? time() + 60*60*24*30 : time() + 3600,
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
+            'samesite' => 'Strict',
+            'path' => '/'
             );
         setcookie('rol_id', strval($rol_id), $arr_cookie_options);
+        setcookie('user_id', strval($userId), $arr_cookie_options);
         $_SESSION['rol_id'] = $rol_id;
+        $_SESSION['user_id'] = $userId;
         DB::insert_log('login_user_success', 'Login success', $userId);
         header('Location: /home');
         exit;

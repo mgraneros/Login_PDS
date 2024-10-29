@@ -16,7 +16,7 @@
         }
 
         public static function insert_log($log_type, $descripcion, $user_id = null, $fecha = null){
-            $fechaToInsert = $fecha ? $fecha : date('Y-m-d');
+            $fechaToInsert = $fecha ? $fecha : date('Y-m-d H:i:s');
             $tables_by_type = array(
                 'create_user_success' => 'usuarios',
                 'create_user_error' => 'usuarios',
@@ -39,7 +39,7 @@
             $db = new DB();
             $sql = "INSERT INTO logs (fecha, usuario_id, accion, descripcion, ip, tabla_afectada) VALUES (:fecha, :usuario_id, :accion, :descripcion, :ip, :tabla_afectada)";
             $query = $db->db->prepare($sql);
-            $query->bindParam('fecha', $fecha, PDO::PARAM_STR, 10);
+            $query->bindParam('fecha', $fecha, PDO::PARAM_STR, 20);
             $query->bindParam('usuario_id', $user_id, PDO::PARAM_INT, 11);
             $query->bindParam('accion', $log_type, PDO::PARAM_STR, 255);
             $query->bindParam('descripcion', $descripcion, PDO::PARAM_STR, 255);

@@ -50,6 +50,7 @@ class User {
         $userObj->setId($user['id']);
         $userObj->setRoleId($user['id_rol']);
         $userObj->setDeletionDate($user['deletionDate']);
+        $userObj->setIsActive($user['es_activo']);
         return $userObj;
     }
     
@@ -191,7 +192,7 @@ class User {
     public static function listUsers(){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role`, user.fecha_nacimiento AS birthdate FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol ORDER BY user.es_activo DESC, user.id_rol";
+        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role`, user.fecha_nacimiento AS birthdate, user.fecha_eliminacion AS deleteDate FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol ORDER BY user.es_activo DESC, user.id_rol";
         $query = $db->db->prepare($sql);
         $query->execute();
         return $query->fetchAll();
@@ -240,6 +241,10 @@ class User {
         } else {
             DB::insert_log('restore_user_error', 'Unauthorized user');
         }
+    }
+
+    public static function getMe(){
+        return User::byId($_COOKIE['user_id']);
     }
 
 }
