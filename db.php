@@ -27,7 +27,9 @@
                 'register_user_success' => 'usuarios',
                 'register_user_error' => 'usuarios',
                 'restore_user_success' => 'usuarios',
-                'restore_user_error' => 'usuarios'
+                'restore_user_error' => 'usuarios',
+                'update_user_error' => 'usuarios',
+                'update_user_success' => 'usuarios'
             );
             $ip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] 
                 : (isset($_SERVER['HTTP_X_FORWARDED_FOR']) 

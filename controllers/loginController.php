@@ -4,8 +4,6 @@ require_once './userController.php';
 require_once '../db.php';
 session_start();
 
-echo '<pre>'; var_dump($_GET); echo '<pre>';
-
 if($_GET){
     if(isset($_GET['action']) && $_GET['action'] == 'logout'){
         session_destroy();

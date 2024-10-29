@@ -8,8 +8,8 @@ class User {
     private string $password;
     private string $roleId;
     private string $id;
-    private string $birthdate;
-    private string $deletionDate;
+    private string | null $birthdate;
+    private string | null $deletionDate;
     private bool $is_active;
 
     public function __construct($email = '', $password = '', $username = "")
@@ -24,6 +24,21 @@ class User {
         $user = new self();
         $user->setRoleId($rol);
         return $user;
+    }
+
+    public function updateUserByAdmin($id, $username, $birthdate){
+        if($this->getRoleId() == 1){
+            require_once '../db.php';
+            $db = new DB();
+            $sql = "UPDATE usuarios SET username = :username, fecha_nacimiento = :birthdate WHERE id = :id";
+            $query = $db->db->prepare($sql);
+            $query->bindParam('username', $username, PDO::PARAM_STR, 45);
+            $query->bindParam('birthdate', $birthdate, PDO::PARAM_STR, 255);
+            $query->bindParam('id', $id, PDO::PARAM_INT);
+            return $query->execute();
+        } else {
+            DB::insert_log('update_user_error', 'Unauthorized user');
+        }
     }
 
     public static function byId($id){
@@ -176,7 +191,7 @@ class User {
     public static function listUsers(){
         require_once '../db.php';
         $db = new DB();
-        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role` FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol ORDER BY user.es_activo DESC, user.id_rol";
+        $sql = "SELECT user.id, user.email, user.username, user.fecha_creacion, user.es_activo, roles.nombre_rol AS `role`, user.fecha_nacimiento AS birthdate FROM usuarios user INNER JOIN roles ON user.id_rol = roles.id_rol ORDER BY user.es_activo DESC, user.id_rol";
         $query = $db->db->prepare($sql);
         $query->execute();
         return $query->fetchAll();
@@ -194,27 +209,37 @@ class User {
     }
 
     public function deleteUser($id) {
-        require_once '../db.php';
-        $db = new DB();
-        $sql = "UPDATE usuarios SET es_activo = :es_activo, fecha_eliminacion = :fecha_elim WHERE id = :id";
-        $query = $db->db->prepare($sql);
-        $active = 0;
-        $deleteDate = date('Y-m-d');
-        $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
-        $query->bindParam('id', $id, PDO::PARAM_STR);
-        $query->bindParam('fecha_elim', $deleteDate, PDO::PARAM_STR, 10);
-        return $query->execute();
+        if($this->getRoleId() == 1){
+
+            require_once '../db.php';
+            $db = new DB();
+            $sql = "UPDATE usuarios SET es_activo = :es_activo, fecha_eliminacion = :fecha_elim WHERE id = :id";
+            $query = $db->db->prepare($sql);
+            $active = 0;
+            $deleteDate = date('Y-m-d');
+            $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
+            $query->bindParam('id', $id, PDO::PARAM_STR);
+            $query->bindParam('fecha_elim', $deleteDate, PDO::PARAM_STR, 10);
+            return $query->execute();
+        } else {
+            DB::insert_log('delete_user_error', 'Unauthorized user');
+        }
     }
 
     public function restoreUser($id) {
-        require_once '../db.php';
-        $db = new DB();
-        $sql = "UPDATE usuarios SET es_activo = :es_activo WHERE id = :id";
-        $query = $db->db->prepare($sql);
-        $active = 1;
-        $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
-        $query->bindParam('id', $id, PDO::PARAM_INT);
-        return $query->execute();
+        if($this->getRoleId() == 1){
+
+            require_once '../db.php';
+            $db = new DB();
+            $sql = "UPDATE usuarios SET es_activo = :es_activo WHERE id = :id";
+            $query = $db->db->prepare($sql);
+            $active = 1;
+            $query->bindParam('es_activo', $active, PDO::PARAM_INT, 1);
+            $query->bindParam('id', $id, PDO::PARAM_INT);
+            return $query->execute();
+        } else {
+            DB::insert_log('restore_user_error', 'Unauthorized user');
+        }
     }
 
 }

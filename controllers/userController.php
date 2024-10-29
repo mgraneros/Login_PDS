@@ -17,7 +17,7 @@ function validateRegisterForms($formsValues){
     $username = $formsValues['username'];
     $birthdate = $formsValues['birthdate'];
     $err = ["username" => false, "email" => false, "password" => false, 'birthdate' => false];
-    $usernamePattern = "/^[a-zA-Z-' ]*$/";
+    $usernamePattern = "/^[a-zA-Z-0-9' ]*$/";
     $passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
     unset($_SESSION['register_error']);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -25,7 +25,7 @@ function validateRegisterForms($formsValues){
         $err['email'] = true;
     }
     if (!preg_match($usernamePattern, $username)) {
-        $_SESSION['register_error'] = 'Invalid username, only letters and whitespaces allowed';
+        $_SESSION['register_error'] = 'Invalid username, only letters, numbers and whitespaces allowed';
         $err['username'] = true;
     }
     if(!preg_match($passwordPattern, $password)){
@@ -42,6 +42,28 @@ function validateRegisterForms($formsValues){
     }
 
     return !($err["email"] || $err['username'] || $err['password'] || $err['birthdate']);
+}
+
+function validateEditForms($formsValues){
+    $username = $formsValues['username'];
+    $birthdate = $formsValues['birthdate'];
+    $err = ["username" => false, 'birthdate' => false];
+    $usernamePattern = "/^[a-zA-Z-0-9' ]*$/";
+    unset($_SESSION['edit_error']);
+    if (!preg_match($usernamePattern, $username)) {
+        $_SESSION['edit_error'] = 'Invalid username, only letters, numbers and whitespaces allowed';
+        $err['username'] = true;
+    }
+    if(!validateDate($birthdate)){
+        $_SESSION['edit_error'] = 'Invalid format birthdate';
+        $err['birthdate'] = true;
+    }
+    if(!validateDateBeforeToday($birthdate)){
+        $_SESSION['edit_error'] = 'Invalid birthdate, is before today';
+        $err['birthdate'] = true;
+    }
+
+    return !($err['username'] || $err['birthdate']);
 }
 
 function validateLoginForms($formsValues){
@@ -117,13 +139,18 @@ function loginUser($email, $password, $remember){
     }
 }
 
+function updateUserByAdmin($id, $username, $birthdate){
+    $user = User::byUserRol(1);
+    return $user->updateUserByAdmin($id, $username, $birthdate);
+}
+
 function deleteUser($id){
-    $adminUser = User::byUserRol('Admin');
+    $adminUser = User::byUserRol(1);
     return $adminUser->deleteUser($id);
 }
 
 function restoreUser($id){
-    $adminUser = User::byUserRol('Admin');
+    $adminUser = User::byUserRol(1);
     return $adminUser->restoreUser($id);
 }
 

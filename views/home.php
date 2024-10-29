@@ -15,7 +15,6 @@
     if($is_admin_user){
         $users = getUsersList();
         $logs = getLogs();
-        // echo '<pre>'; var_dump($logs); echo '<pre>';exit;
     } else {
         //TODO Change this to a "find myself" function
         $users = getUsersList();
@@ -30,9 +29,8 @@
     if($_GET && isset($_GET['emailSearch'])){
         $users = getUsersListByEmail($_GET['emailSearch']);
     }
-    // echo '<pre>'; var_dump('users: ', $users); echo '<pre>';
 ?>
-<div class="mt-52 flex flex-column w-full">
+<div class="mt-40 flex flex-column w-full items-center">
 
 
     <div class="bg-slate-600 absolute flex flex-row items-center justify-between w-full h-14 top-0">
@@ -44,7 +42,7 @@
             </form>
         </div>
     </div>
-    <div class="w-full flex flex-col mt-32">
+    <div class="w-full flex flex-col mt-72">
         <div class="w-full flex flex-col items-center">
             <div class="flex flex-row justify-between mt-5 w-9/12 items-center">
                 <h1 class="h1 font-bold text-xl">Users lists</h1>
@@ -79,6 +77,7 @@
                     <td class='border border-slate-500'><?= formatDateToShow($user['fecha_creacion']) ?></td>
                     <td class='border border-slate-500'><?= $user['es_activo'] ?></td>
                     <td class='border border-slate-500'><?= $user['role'] ?></td>
+                    <td class='border border-slate-500'><?= $user['birthdate'] ? formatDateToShow($user['birthdate']) : '' ?></td>
                     <td class="border border-slate-500"><form method="GET" action="/controllers/editController.php"><input type="hidden" name="idEdit" value=<?= $user['id'] ?> class='disabled' /><button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full">Edit</button></form></td>
                     <td class="border border-slate-500"><form method="POST" action="/controllers/deleteController.php"><input name=<?= $idInputName ?> type="hidden" class="disabled" value=<?= $user['id'] ?> /><button class="<?= $classNames ?>"><?= $buttonText ?></button></form></td>
                 </tr>
@@ -92,29 +91,31 @@
             <div class="flex flex-row justify-center mt-5 w-9/12 items-center">
                 <h1 class="h1 font-bold text-xl">Logs</h1>
             </div>
-            <table class="table-auto border mt-3 border-slate-500 w-9/12 [&>tbody>*:nth-child(odd)]:text-white [&>tbody>*:nth-child(even)]:bg-white [&>tbody>*:nth-child(odd)]:bg-gray-600 [&>tbody>*:nth-child(even)]:text-black">
-            <thead>
-                <tr class="bg-indigo-600">
-                <?php foreach($thsLogs as $thLog): ?>
-                    <th class="border border-slate-500 capitalize"><?= $thLog ?></th>
-                <?php endforeach ?>
-                </tr>
-            </thead>
-            <tbody class="text-center">
-                <?php foreach($logs as $log): ?>
-                <tr>
-                    <td class='border border-slate-500'><?= $log['id_log'] ?></td>
-                    <td class='border border-slate-500'><?= formatDateToShow($log['fecha']) ?></td>
-                    <td class='border border-slate-500'><?= $log['usuario_id'] ?></td>
-                    <td class='border border-slate-500'><?= $log['accion'] ?></td>
-                    <td class='border border-slate-500'><?= $log['descripcion'] ?></td>
-                    <td class='border border-slate-500'><?= $log['ip'] ?></td>
-                    <td class="border border-slate-500"><?= $log['tabla_afectada'] ?></td>
-                </tr>
-                <?php endforeach ?>
-            </tbody>
-            </table>
-
+            <div class="h-72 flex-col flex overflow-y-auto w-9/12">
+                <table class="table-auto border mt-3 border-slate-500 w-full [&>tbody>*:nth-child(odd)]:text-white [&>tbody>*:nth-child(even)]:bg-white [&>tbody>*:nth-child(odd)]:bg-gray-600 [&>tbody>*:nth-child(even)]:text-black">
+                <thead>
+                    <tr class="bg-indigo-600">
+                    <?php foreach($thsLogs as $thLog): ?>
+                        <th class="border border-slate-500 capitalize"><?= $thLog ?></th>
+                    <?php endforeach ?>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    <?php foreach($logs as $log): ?>
+                    <tr class="">
+                        <td class='border border-slate-500'><?= $log['id_log'] ?></td>
+                        <td class='border border-slate-500'><?= formatDateToShow($log['fecha']) ?></td>
+                        <td class='border border-slate-500'><?= $log['usuario_id'] ?></td>
+                        <td class='border border-slate-500'><?= $log['accion'] ?></td>
+                        <td class='border border-slate-500'><?= $log['descripcion'] ?></td>
+                        <td class='border border-slate-500'><?= $log['ip'] ?></td>
+                        <td class="border border-slate-500"><?= $log['tabla_afectada'] ?></td>
+                    </tr>
+                    <?php endforeach ?>
+                    </div>
+                </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
