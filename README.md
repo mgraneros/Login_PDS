@@ -15,13 +15,11 @@ Usa el código con precaución.
 
 Configurar Apache
 
-1. En la seccion de apache ingresaremos con el servicio apagado, en el apartado de config haciendo click y seleccionaremos la opcion apache(httpd.conf)
+1.  En la seccion de apache ingresaremos con el servicio apagado, en el apartado de config haciendo click y seleccionaremos la opcion apache(httpd.conf)
 En el archivo buscaremos el siguiente texto:
 DocumentRoot "C:/xampp/htdocs/"
 <Directory "C:/xampp/htdocs">
-y lo cambiaremos por el siguiente
-DocumentRoot "C:/xampp/htdocs/Login_PDS"
-<Directory "C:/xampp/htdocs/Login_PDS">
+y lo cambiaremos por la ruta donde se encuentre guardado el proyecto (por ejemplo: "C:/xampp/htdocs/Login_PDS")
 2. Luego encenderemos el apache y MySQL en la aplicacion de xampp
 4. Ingresaremos mediante el navegador con la siguiente ruta: "localhost"
 5. Ya en esta instancia, visualizaremos lo que seria nuestro main de pagina de registro
