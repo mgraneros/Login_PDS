@@ -28,7 +28,7 @@ DocumentRoot "C:/xampp/htdocs/Login_PDS"
 
 Crear la base de datos:
 Crear una base de datos: Utilizar phpMyAdmin o la consola MySQL para crear una nueva base de datos (por ejemplo, login_pds).
-Importar el esquema: Ejecutar el script tp.sql para crear las tablas y relaciones necesarias.
+Importar el esquema: Ejecutar el script tp (1).sql para crear las tablas y relaciones necesarias.
 
 Configurar el archivo de conexión:
 Editar db.php: Introducir los datos de conexión a tu base de datos (host, usuario, contraseña, base de datos).
